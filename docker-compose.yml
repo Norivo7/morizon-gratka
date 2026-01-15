@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: morizon
+      POSTGRES_PASSWORD: morizon
+      POSTGRES_DB: morizon
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  phoenix:
+    build:
+      context: ./phoenix-api
+    working_dir: /app
+    environment:
+      DATABASE_URL: ecto://morizon:morizon@db/morizon
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./phoenix-api:/app
+    depends_on:
+      - db
+
+  symfony:
+    build:
+      context: ./symfony-app
+    working_dir: /app
+    environment:
+      PHOENIX_BASE_URL: http://phoenix:4000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./symfony-app:/app
+    depends_on:
+      - phoenix
+
+volumes:
+  db_data:
