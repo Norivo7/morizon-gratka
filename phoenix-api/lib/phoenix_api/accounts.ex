@@ -111,6 +111,76 @@ defmodule PhoenixApi.Accounts do
     User.changeset(user, attrs)
   end
 
+  def import_random_users_from_pesel(count \\ 100) when is_integer(count) and count > 0 do
+    base = pesel_dir()
+
+    male_first   = read_top_100_first_col(Path.join(base, "imiona_meskie.csv"))
+    female_first = read_top_100_first_col(Path.join(base, "imiona_damskie.csv"))
+    male_last    = read_top_100_first_col(Path.join(base, "nazwiska_meskie.csv"))
+    female_last  = read_top_100_first_col(Path.join(base, "nazwiska_damskie.csv"))
+
+    Enum.reduce(1..count, {0, 0}, fn _, {ok, fail} ->
+      attrs = random_user_attrs_from_lists(male_first, female_first, male_last, female_last)
+
+      case create_user(attrs) do
+        {:ok, _} -> {ok + 1, fail}
+        {:error, _} -> {ok, fail + 1}
+      end
+    end)
+  end
+
+  defp pesel_dir do
+    :phoenix_api |> Application.app_dir("priv/pesel")
+  end
+
+  defp read_top_100_first_col(path) do
+    path
+    |> File.stream!()
+    |> Stream.map(&String.trim/1)
+    |> Stream.reject(&(&1 == ""))
+    |> Stream.map(&String.replace(&1, "\uFEFF", "")) # BOM safety
+    |> Stream.drop(1) # drop header
+    |> Stream.map(fn line ->
+      line
+      |> String.split(",", parts: 2)
+      |> List.first()
+      |> String.trim()
+    end)
+    |> Stream.reject(&(&1 == ""))
+    |> Stream.take(100)
+    |> Enum.to_list()
+  end
+
+  defp random_user_attrs_from_lists(male_first, female_first, male_last, female_last) do
+    gender = if :rand.uniform(2) == 1, do: "male", else: "female"
+
+    first_name =
+      if gender == "male",
+         do: Enum.random(male_first),
+         else: Enum.random(female_first)
+
+    last_name =
+      if gender == "male",
+         do: Enum.random(male_last),
+         else: Enum.random(female_last)
+
+    %{
+      first_name: String.capitalize(String.downcase(first_name)),
+      last_name: String.capitalize(String.downcase(last_name)),
+      gender: gender,
+      birthdate: random_birthdate(~D[1970-01-01], ~D[2024-12-31])
+    }
+  end
+
+  defp random_birthdate(from_date, to_date) do
+    from_days = Date.to_gregorian_days(from_date)
+    to_days = Date.to_gregorian_days(to_date)
+
+    random_days = :rand.uniform(to_days - from_days + 1) - 1
+    Date.from_gregorian_days(from_days + random_days)
+  end
+
+
   defp normalize_params(params) do
     %{
       "first_name" => blank_to_nil(params["first_name"]),
