@@ -1,6 +1,7 @@
 <?php
-
 declare(strict_types=1);
+
+namespace App\User\Infrastructure\Phoenix;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -11,12 +12,16 @@ final readonly class PhoenixClient
         private string $baseUrl,
     ) {}
 
-    public function listUsers(array $filters = []): array
+    public function listUsers(array $query = []): array
     {
-        $response = $this->httpClient->request('GET', $this->baseUrl . '/users', [
-            'query' => $filters,
-        ]);
+        $response = $this->httpClient->request(
+            'GET',
+            rtrim($this->baseUrl, '/').'/api/users',
+            ['query' => $query]
+        );
 
-        return $response->toArray()['data'] ?? [];
+        $payload = $response->toArray(false);
+
+        return $payload['data'] ?? [];
     }
 }

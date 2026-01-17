@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+    <h1>Users</h1>
+
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <input name="first_name" placeholder="First name" value="{{ app.request.get('first_name') }}">
+        <input name="last_name" placeholder="Last name" value="{{ app.request.get('last_name') }}">
+
+        <select name="gender">
+            <option value="">Gender</option>
+            <option value="male" {{ app.request.get('gender') == 'male' ? 'selected' : '' }}>male</option>
+            <option value="female" {{ app.request.get('gender') == 'female' ? 'selected' : '' }}>female</option>
+        </select>
+
+        <input type="date" name="birthdate_from" value="{{ app.request.get('birthdate_from') }}">
+        <input type="date" name="birthdate_to" value="{{ app.request.get('birthdate_to') }}">
+
+        <select name="sort_by">
+            <option value="">Sort by</option>
+            <option value="first_name" {{ app.request.get('sort_by') == 'first_name' ? 'selected' : '' }}>first_name</option>
+            <option value="last_name" {{ app.request.get('sort_by') == 'last_name' ? 'selected' : '' }}>last_name</option>
+            <option value="birthdate" {{ app.request.get('sort_by') == 'birthdate' ? 'selected' : '' }}>birthdate</option>
+        </select>
+
+        <select name="sort_dir">
+            <option value="asc" {{ app.request.get('sort_dir') == 'asc' ? 'selected' : '' }}>asc</option>
+            <option value="desc" {{ app.request.get('sort_dir') == 'desc' ? 'selected' : '' }}>desc</option>
+        </select>
+
+        <button type="submit">Apply</button>
+        <a href="{{ path('user_index') }}">Reset</a>
+    </form>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Gender</th>
+            <th>Birthdate</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.first_name }}</td>
+                <td>{{ u.last_name }}</td>
+                <td>{{ u.gender }}</td>
+                <td>{{ u.birthdate }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5">No users</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
