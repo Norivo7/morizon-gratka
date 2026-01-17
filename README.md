@@ -1,15 +1,8 @@
 ## Morizon–Gratka Recruitment Task
 
 
-consisting of:
-
-- Phoenix (Elixir)
-- Symfony (PHP)
-- Docker Compose
-
-Symfony follows a DDD-inspired modular structure
-to keep clear boundaries, while the domain and persistence are handled by Phoenix API.
-
+Symfony uses a DDD-inspired modular structure (Application / Infrastructure / UI),
+while the domain logic and persistence live in the Phoenix API.
 ### Requirements
 Docker + Docker Compose
 
@@ -55,12 +48,14 @@ Symfony frontend → http://localhost:8000/users
 
 Phoenix exposes an import endpoint that generates 100 users based on PESEL name datasets.
 
+import adds users; for clean demo use TRUNCATE command at the end of this readme.
+
 Token is configured via ```IMPORT_TOKEN``` env var in ``docker-compose.yml`` (phoenix service).
 
 Endpoint is protected with x-api-token header.
 
-
 Import can be executed multiple times (for demo purposes)
+
 ### Run:
 ```bash
 curl -X POST http://localhost:4000/api/import -H "x-api-token: change_me"
@@ -86,17 +81,25 @@ CSV files are stored locally in``` phoenix-api/priv/pesel/```
 - Gender consistent with first name
 - Birthdate randomly generated between 1970-01-01 and 2024-12-31
 
-### Endpoints
+## Endpoints
+### Phoenix - base URL: http://localhost:4000
+| Method	 | Endpoint       | 	Description                              |
+|---------|----------------|-------------------------------------------|
+| GET	    | /api/users     | 	List users (filters & sorting supported) |
+| POST	   | /api/users     | 	Create user                              |
+| GET	    | /api/users/:id | 	Get user details                         |
+| PUT	    | /api/users/:id | 	Update user                              |
+| DELETE	 | /api/users/:id | 	Delete user                              |
+| POST	   | /api/import    | 	Import users (requires x-api-token)      |
 
-| Method	 | Endpoint   | 	Description                              |
-|---------|------------|-------------------------------------------|
-| GET	    | /users     | 	List users (filters & sorting supported) |
-| POST	   | /users     | 	Create user                              |
-| GET	    | /users/:id | 	Get user details                         |
-| PUT	    | /users/:id | 	Update user                              |
-| DELETE	 | /users/:id | 	Delete user                              |
-| POST	   | /import    | 	Import users (requires x-api-token)      |
+### Symfony base URL: http://localhost:8000
 
+| Route              | 	Description     |
+|--------------------|------------------|
+| /users             | Users list       |
+| /users/new         | Create user form |
+| /users/{id}/edit   | Edit form        |
+| /users/{id}/delete | Delete           |
 
 ### Features:
 
