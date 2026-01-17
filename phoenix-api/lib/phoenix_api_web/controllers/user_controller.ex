@@ -21,23 +21,39 @@ defmodule PhoenixApiWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    render(conn, :show, user: user)
+    case Accounts.get_user(id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "User not found"})
+
+      user ->
+        render(conn, :show, user: user)
+    end
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Accounts.get_user!(id)
+    case Accounts.get_user(id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "User not found"})
 
-    with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
-      render(conn, :show, user: user)
+      user ->
+        with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
+          render(conn, :show, user: user)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
+    case Accounts.get_user(id) do
+      nil ->
+        conn |> put_status(:not_found) |> json(%{error: "User not found"})
 
-    with {:ok, %User{}} <- Accounts.delete_user(user) do
-      send_resp(conn, :no_content, "")
+      user ->
+        with {:ok, %User{}} <- Accounts.delete_user(user) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
+
 end
