@@ -4,11 +4,17 @@ defmodule PhoenixApiWeb.ImportController do
   alias PhoenixApi.Accounts
 
   def create(conn, _params) do
-    {inserted, failed} = Accounts.import_random_users_from_pesel(100)
+    required = System.get_env("IMPORT_TOKEN") || ""
 
-    json(conn, %{
-      inserted: inserted,
-      failed: failed
-    })
+    case get_req_header(conn, "x-api-token") do
+      [^required] when required != "" ->
+        {inserted, failed} = Accounts.import_random_users_from_pesel(100)
+        json(conn, %{inserted: inserted, failed: failed})
+
+      _ ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "unauthorized"})
+    end
   end
 end
