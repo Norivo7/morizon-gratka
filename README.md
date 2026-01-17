@@ -49,13 +49,16 @@ Symfony frontend → http://localhost:8000/users
 
 Phoenix exposes an import endpoint that generates 100 users based on PESEL name datasets.
 
-import adds users; for clean demo use TRUNCATE command at the end of this readme.
-
-Token is configured via ```IMPORT_TOKEN``` env var in ``docker-compose.yml`` (phoenix service).
-
-Endpoint is protected with x-api-token header.
+Import adds users; for clean demo use TRUNCATE command at the end of this readme.
 
 Import can be executed multiple times (for demo purposes)
+
+### Security
+Endpoint is protected with x-api-token header.
+
+Token is configured via ```IMPORT_TOKEN``` env var in ``docker-compose.yml`` (phoenix service). 
+
+If you change it, remember to rebuild the containers.
 
 ### Run:
 ```bash
@@ -74,7 +77,7 @@ User data is generated from official PESEL datasets:
 
 [Top 100 male last names](https://dane.gov.pl/pl/dataset/1681,nazwiska-osob-zyjacych-wystepujace-w-rejestrze-pesel/resource/63892/table?page=1&per_page=20&q=&sort=)
 
-CSV files are stored locally in``` phoenix-api/priv/pesel/```
+CSV files are stored locally in ```phoenix-api/priv/pesel/```
 
 ### Generation rules:
 
@@ -114,7 +117,7 @@ CSV files are stored locally in``` phoenix-api/priv/pesel/```
 ### Useful commands
 to clear users data in Phoenix DB:
 ```bash
-docker compose exec db psql -U morizon -d morizon -c "TRUNCATE users RESTART IDENTITY;"```
+docker compose exec db psql -U morizon -d morizon -c "TRUNCATE users RESTART IDENTITY;"
 ```
 
 ### Curl examples
