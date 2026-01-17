@@ -17,6 +17,7 @@ services:
     working_dir: /app
     environment:
       DATABASE_URL: ecto://morizon:morizon@db/morizon
+      IMPORT_TOKEN: "change_me"
     ports:
       - "4000:4000"
     volumes:
@@ -27,6 +28,7 @@ services:
   symfony:
     build:
       context: ./symfony-app
+      dockerfile: ../docker/symfony/Dockerfile
     working_dir: /app
     environment:
       PHOENIX_BASE_URL: http://phoenix:4000
