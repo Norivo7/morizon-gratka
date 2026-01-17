@@ -15,4 +15,4 @@ RUN mix deps.get
 COPY . .
 
 EXPOSE 4000
-CMD ["bash", "-lc", "mix deps.get && mix phx.server"]
+CMD ["bash", "-lc", "mix deps.get && mix ecto.migrate && mix phx.server"]
