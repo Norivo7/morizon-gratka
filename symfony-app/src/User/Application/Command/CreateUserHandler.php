@@ -10,7 +10,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final readonly class CreateUserHandler
 {
-    public function __construct(private PhoenixClient $client) {}
+    public function __construct(private PhoenixClient $client)
+    {
+    }
 
     public function __invoke(CreateUserCommand $command): array
     {

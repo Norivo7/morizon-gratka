@@ -7,7 +7,6 @@ namespace App\User\UI\Http\Controller;
 use App\User\Application\Command\CreateUserCommand;
 use App\User\Application\Command\DeleteUserCommand;
 use App\User\Application\Command\UpdateUserCommand;
-use App\User\Application\Query\ListUsersHandler;
 use App\User\Application\Query\ListUsersQuery;
 use App\User\Infrastructure\Phoenix\PhoenixClient;
 use App\User\UI\Http\Form\UserFilterType;
@@ -76,6 +75,7 @@ final class UserController extends AbstractController
             ));
 
             $this->addFlash('success', 'User created.');
+
             return $this->redirectToRoute('user_index');
         }
 
@@ -93,7 +93,7 @@ final class UserController extends AbstractController
         }
 
         $birthdate = null;
-        if (isset($user['birthdate']) && is_string($user['birthdate']) && $user['birthdate'] !== '') {
+        if (isset($user['birthdate']) && is_string($user['birthdate']) && '' !== $user['birthdate']) {
             $birthdate = new \DateTimeImmutable($user['birthdate']);
         }
 
@@ -118,6 +118,7 @@ final class UserController extends AbstractController
             ));
 
             $this->addFlash('success', 'User updated.');
+
             return $this->redirectToRoute('user_index');
         }
 
@@ -133,6 +134,7 @@ final class UserController extends AbstractController
         $bus->dispatch(new DeleteUserCommand($id));
 
         $this->addFlash('success', 'User deleted.');
+
         return $this->redirectToRoute('user_index');
     }
 }

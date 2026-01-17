@@ -12,5 +12,6 @@ final readonly class UpdateUserCommand
         public string $lastName,
         public string $gender,
         public string $birthdate,
-    ) {}
+    ) {
+    }
 }

@@ -14,5 +14,6 @@ final readonly class ListUsersQuery
         public ?string $birthdateTo = null,
         public ?string $sortBy = null,
         public ?string $sortDir = null,
-    ) {}
+    ) {
+    }
 }

@@ -10,31 +10,33 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final readonly class ListUsersHandler
 {
-    public function __construct(private PhoenixClient $client) {}
+    public function __construct(private PhoenixClient $client)
+    {
+    }
 
     public function __invoke(ListUsersQuery $q): array
     {
         $params = [];
 
-        if ($q->firstName !== null && $q->firstName !== '') {
+        if (null !== $q->firstName && '' !== $q->firstName) {
             $params['first_name'] = $q->firstName;
         }
-        if ($q->lastName !== null && $q->lastName !== '') {
+        if (null !== $q->lastName && '' !== $q->lastName) {
             $params['last_name'] = $q->lastName;
         }
-        if ($q->gender !== null && $q->gender !== '') {
+        if (null !== $q->gender && '' !== $q->gender) {
             $params['gender'] = $q->gender;
         }
-        if ($q->birthdateFrom !== null && $q->birthdateFrom !== '') {
+        if (null !== $q->birthdateFrom && '' !== $q->birthdateFrom) {
             $params['birthdate_from'] = $q->birthdateFrom;
         }
-        if ($q->birthdateTo !== null && $q->birthdateTo !== '') {
+        if (null !== $q->birthdateTo && '' !== $q->birthdateTo) {
             $params['birthdate_to'] = $q->birthdateTo;
         }
-        if ($q->sortBy !== null && $q->sortBy !== '') {
+        if (null !== $q->sortBy && '' !== $q->sortBy) {
             $params['sort_by'] = $q->sortBy;
         }
-        if ($q->sortDir !== null && $q->sortDir !== '') {
+        if (null !== $q->sortDir && '' !== $q->sortDir) {
             $params['sort_dir'] = $q->sortDir;
         }
 

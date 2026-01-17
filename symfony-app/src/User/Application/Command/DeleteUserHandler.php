@@ -10,7 +10,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final readonly class DeleteUserHandler
 {
-    public function __construct(private PhoenixClient $client) {}
+    public function __construct(private PhoenixClient $client)
+    {
+    }
 
     public function __invoke(DeleteUserCommand $command): void
     {

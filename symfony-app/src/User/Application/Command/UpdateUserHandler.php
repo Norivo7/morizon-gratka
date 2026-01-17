@@ -10,7 +10,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final readonly class UpdateUserHandler
 {
-    public function __construct(private PhoenixClient $client) {}
+    public function __construct(private PhoenixClient $client)
+    {
+    }
 
     public function __invoke(UpdateUserCommand $command): array
     {
