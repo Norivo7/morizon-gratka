@@ -1,47 +1,55 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Users{% endblock %}
 
 {% block body %}
     <h1>Users</h1>
 
-    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-        <input name="first_name" placeholder="First name" value="{{ app.request.get('first_name') }}">
-        <input name="last_name" placeholder="Last name" value="{{ app.request.get('last_name') }}">
+    <div class="actions">
+        <a class="btn btn-primary" href="{{ path('user_new') }}">+ Add user</a>
+        <span class="muted">Data from Phoenix API</span>
+    </div>
 
-        <select name="gender">
-            <option value="">Gender</option>
-            <option value="male" {{ app.request.get('gender') == 'male' ? 'selected' : '' }}>male</option>
-            <option value="female" {{ app.request.get('gender') == 'female' ? 'selected' : '' }}>female</option>
-        </select>
+    <hr>
 
-        <input type="date" name="birthdate_from" value="{{ app.request.get('birthdate_from') }}">
-        <input type="date" name="birthdate_to" value="{{ app.request.get('birthdate_to') }}">
+    {{ form_start(filterForm) }}
+    <div class="row">
+        <div>{{ form_row(filterForm.first_name) }}</div>
+        <div>{{ form_row(filterForm.last_name) }}</div>
+        <div>{{ form_row(filterForm.gender) }}</div>
+        <div>{{ form_row(filterForm.birthdate_from) }}</div>
+        <div>{{ form_row(filterForm.birthdate_to) }}</div>
+        <div>
+            <button class="btn" type="submit">Filter</button>
+            <a class="btn" href="{{ path('user_index') }}">Reset</a>
+        </div>
+    </div>
+    {{ form_end(filterForm) }}
 
-        <select name="sort_by">
-            <option value="">Sort by</option>
-            <option value="first_name" {{ app.request.get('sort_by') == 'first_name' ? 'selected' : '' }}>first_name</option>
-            <option value="last_name" {{ app.request.get('sort_by') == 'last_name' ? 'selected' : '' }}>last_name</option>
-            <option value="birthdate" {{ app.request.get('sort_by') == 'birthdate' ? 'selected' : '' }}>birthdate</option>
-        </select>
+    {% set currentSortBy = app.request.query.get('sort_by') %}
+    {% set currentSortDir = app.request.query.get('sort_dir') %}
 
-        <select name="sort_dir">
-            <option value="asc" {{ app.request.get('sort_dir') == 'asc' ? 'selected' : '' }}>asc</option>
-            <option value="desc" {{ app.request.get('sort_dir') == 'desc' ? 'selected' : '' }}>desc</option>
-        </select>
+    {% macro sort_link(label, column, currentSortBy, currentSortDir) %}
+        {% set nextDir = 'asc' %}
+        {% if currentSortBy == column and currentSortDir == 'asc' %}
+            {% set nextDir = 'desc' %}
+        {% endif %}
+        <a href="{{ path('user_index', app.request.query.all | merge({'sort_by': column, 'sort_dir': nextDir})) }}">
+            {{ label }}
+            {% if currentSortBy == column %}
+                {% if currentSortDir == 'asc' %}▲{% else %}▼{% endif %}
+            {% endif %}
+        </a>
+    {% endmacro %}
 
-        <button type="submit">Apply</button>
-        <a href="{{ path('user_index') }}">Reset</a>
-    </form>
-
-    <table border="1" cellpadding="6" cellspacing="0">
+    <table>
         <thead>
         <tr>
             <th>ID</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Gender</th>
-            <th>Birthdate</th>
+            <th>{{ _self.sort_link('First name', 'first_name', currentSortBy, currentSortDir) }}</th>
+            <th>{{ _self.sort_link('Last name', 'last_name', currentSortBy, currentSortDir) }}</th>
+            <th>{{ _self.sort_link('Gender', 'gender', currentSortBy, currentSortDir) }}</th>
+            <th>{{ _self.sort_link('Birthdate', 'birthdate', currentSortBy, currentSortDir) }}</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -52,9 +60,15 @@
                 <td>{{ u.last_name }}</td>
                 <td>{{ u.gender }}</td>
                 <td>{{ u.birthdate }}</td>
+                <td class="actions">
+                    <a class="btn" href="{{ path('user_edit', {id: u.id}) }}">Edit</a>
+                    <form class="inline" method="post" action="{{ path('user_delete', {id: u.id}) }}" onsubmit="return confirm('Delete user?');">
+                        <button class="btn" type="submit">Delete</button>
+                    </form>
+                </td>
             </tr>
         {% else %}
-            <tr><td colspan="5">No users</td></tr>
+            <tr><td colspan="6">No users</td></tr>
         {% endfor %}
         </tbody>
     </table>

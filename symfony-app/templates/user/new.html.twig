@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block title %}New user{% endblock %}
+
+{% block body %}
+    <h1>New user</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" type="submit">Create</button>
+        <a class="btn" href="{{ path('user_index') }}">Back</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
